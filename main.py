@@ -1,4 +1,5 @@
 
+import re
 from Python.Keenetic import Keenetic
 DRIVERPATH = r"Driver\chromedriver.exe"
 
@@ -108,6 +109,7 @@ class MainScreen(QDialog):
                 else:
                     QMessageBox.about(self, ":(", "Error!")   
         else:
+            print(result)
             QMessageBox.about(self, ":(", "Error!")
 
     def __exit(self):

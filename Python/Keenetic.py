@@ -6,12 +6,29 @@ from time import sleep
 
 import logging
 from datetime import datetime as dt
-from os import getcwd
+from os import getcwd, mkdir,path
+
 
 
 ADSLMARGINCB = '//*[@id="cp-main-container"]/div/div[1]/div[1]/div/div[2]/div/form/div[4]/ng-include/ndm-details/div/div[2]/fieldset/div[2]/ndm-selectbox2/div/div[2]/a/div'
 VDSLMARGINCB = '//*[@id="cp-main-container"]/div/div[1]/div[1]/div/div[2]/div/form/div[4]/ng-include/ndm-details/div/div[2]/fieldset/div[3]/ndm-selectbox2/div/div[2]/a/div'
 
+
+def printTime():
+    """Saat_Dakika_Gün_Ay şeklinde döner"""
+    parser = dt.now()
+    return parser.strftime("%H_%M_%d_%m")
+
+
+if not path.exists(fr"{getcwd()}\Log"): mkdir(fr"{getcwd()}\Log")
+
+logging.basicConfig(
+    filename=fr"{getcwd()}\Log\log_{printTime()}.txt",
+    format="%(asctime)s - %(levelname)s - %(message)s ",
+    filemode="w",
+    level=logging.DEBUG
+)
+logger = logging.getLogger()
 
 
 def printTime():
@@ -34,6 +51,8 @@ class Keenetic:
         options = ChromeOptions()
         options.add_argument(f"user-data-dir={self.chromeProfileLoc}")
         options.add_argument("--log-level=3")
+        options.add_argument('--disable-gpu')
+        options.add_argument("--no-sandbox")
         options.headless = self.headless
         self.browser = Chrome(executable_path=self.driverLocation,options=options)
         self.browser.set_window_position(0,0)
@@ -78,7 +97,7 @@ class Keenetic:
             return (None,None)
 
     def __pressSave(self):
-        self.__clickXY(84,586)
+        self.__clickXY(170,740)
 
 
     def __clickXY(self,x,y):
@@ -118,14 +137,13 @@ class Keenetic:
                             tiklanacakDbsValue = i.get_attribute('data-ndm-option-value')
                             if tiklanacakDbsValue == str(value):
                                 tiklanacakDbs = i
-                        
-
                         tiklanacakDbs.click()
+                        sleep(0.3)
                         self.__pressSave()
                         sleep(2)
                         return True
                     except Exception as e:
-                        print(f"Error detail {e}")
+                        logger.error(e)
                         return False
             else:
                 #ADSL
@@ -148,6 +166,7 @@ class Keenetic:
                             if tiklanacakDbsValue == str(value):
                                 tiklanacakDbs = i
                         tiklanacakDbs.click()
+                        sleep(0.3)
                         self.__pressSave()
                         sleep(2)
                         return True
